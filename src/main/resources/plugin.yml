@@ -1,0 +1,8 @@
+author: Manolo8
+main: br.com.tinycraft.zsoulkeep.zSoulKeep
+name: zSoulKeep
+version: 1.0
+commands:
+  souls:
+    aliases: [almas]
+    usage: /<command>
