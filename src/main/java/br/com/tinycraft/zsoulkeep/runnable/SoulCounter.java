@@ -1,5 +1,6 @@
 package br.com.tinycraft.zsoulkeep.runnable;
 
+import br.com.tinycraft.zsoulkeep.language.Language;
 import br.com.tinycraft.zsoulkeep.user.User;
 import br.com.tinycraft.zsoulkeep.user.UserManager;
 import java.util.Iterator;
@@ -14,10 +15,12 @@ public class SoulCounter extends BukkitRunnable
 {
 
     private UserManager userManager;
+    private Language language;
 
-    public SoulCounter(UserManager userManager)
+    public SoulCounter(UserManager userManager, Language language)
     {
         this.userManager = userManager;
+        this.language = language;
     }
 
     @Override
@@ -31,7 +34,7 @@ public class SoulCounter extends BukkitRunnable
             User user = i.next();
             if(user.giveSoul())
             {
-                Bukkit.getPlayer(user.getUuid()).sendMessage("§aVocê recebeu uma alma! Agora tem " + user.getSouls() + " almas.");
+                Bukkit.getPlayer(user.getUuid()).sendMessage(language.getMessage("receive.soul",user.getSouls()));
             }
         }
     }

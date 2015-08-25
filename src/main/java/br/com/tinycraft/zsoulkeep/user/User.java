@@ -12,14 +12,14 @@ public class User
     private final UUID uuid;
     private long lastGive;
     private int souls;
-    private int limite;
+    private int limit;
 
-    public User(UUID uuid, long lastGive, int souls, int limite)
+    public User(UUID uuid, long lastGive, int souls, int limit)
     {
         this.uuid = uuid;
         this.lastGive = lastGive;
         this.souls = souls;
-        this.limite = limite;
+        this.limit = limit;
     }
 
     public UUID getUuid()
@@ -35,6 +35,11 @@ public class User
     public int getSouls()
     {
         return souls;
+    }
+
+    public int getLimit()
+    {
+        return limit;
     }
 
     public int lostSoul()
@@ -56,10 +61,15 @@ public class User
     {
         this.souls = souls;
     }
+    
+    public void setLimit(int limit)
+    {
+        this.limit = limit;
+    }
 
     public boolean giveSoul()
     {
-        if (souls >= limite)
+        if (souls >= limit)
         {
             return false;
         } else
@@ -69,13 +79,16 @@ public class User
         }
     }
 
-    public void giveSouls(int quantity)
+    public int giveSouls(int quantity)
     {
+        int oldQuantity = souls;
         souls += quantity;
 
-        if (souls > limite)
+        if (souls > limit)
         {
-            souls = limite;
+            souls = limit;
         }
+        
+        return souls - oldQuantity;
     }
 }

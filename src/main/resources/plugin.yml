@@ -4,5 +4,22 @@ name: zSoulKeep
 version: 1.0
 commands:
   souls:
-    aliases: [almas]
+    aliases: [almas,soul,alma]
     usage: /<command>
+  soulsadm:
+    aliases: [almaadm,almasadm,souladm]
+    usage: |
+      /<command> setsouls [player] value
+      /<command> addsouls [player] value
+      /<command> setlimit [player] value
+permissions:
+  zsoulkeep.user.souls.other:
+    default: true
+  zsoulkeep.user.souls.you:
+    default: true
+  zsoulkeep.admin.setlimit:
+    default: op
+  zsoulkeep.admin.addsouls:
+    default: op
+  zsoulkeep.admin.setsouls:
+    default: op

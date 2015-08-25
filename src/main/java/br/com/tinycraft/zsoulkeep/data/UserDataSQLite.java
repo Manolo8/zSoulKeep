@@ -1,5 +1,6 @@
 package br.com.tinycraft.zsoulkeep.data;
 
+import br.com.tinycraft.zsoulkeep.SoulConfig;
 import br.com.tinycraft.zsoulkeep.user.User;
 import br.com.tinycraft.zsoulkeep.zSoulKeep;
 import java.sql.Connection;
@@ -20,9 +21,11 @@ public class UserDataSQLite implements UserData
 {
 
     private Connection connection;
+    private SoulConfig soulConfig;
 
     public UserDataSQLite(zSoulKeep plugin)
     {
+        this.soulConfig = plugin.getSoulConfig();
         try
         {
             Class.forName("org.sqlite.JDBC");
@@ -34,6 +37,7 @@ public class UserDataSQLite implements UserData
                     + "(uuid               TEXT     NOT NULL,"
                     + " lastGive           REAL     NOT NULL, "
                     + " souls              INT      NOT NULL,"
+                    + " soulsLimit         INT      NOT NULL,"
                     + "PRIMARY KEY(uuid));");
             stat.close();
 
@@ -56,11 +60,14 @@ public class UserDataSQLite implements UserData
             {
                 Long lastGive = rs.getLong("lastGive");
                 int souls = rs.getInt("souls");
+                int limit = rs.getInt("soulsLimit");
 
-                user = new User(uuid, lastGive, souls, 7);
+                user = new User(uuid, lastGive, souls, limit);
             } else
             {
-                user = new User(uuid, System.currentTimeMillis(), 7, 7);
+                user = new User(uuid, System.currentTimeMillis(),
+                        soulConfig.getStartSouls(),
+                        soulConfig.getSoulLimit());
             }
 
             return user;
@@ -68,7 +75,9 @@ public class UserDataSQLite implements UserData
         } catch (SQLException ex)
         {
             Logger.getLogger(UserDataSQLite.class.getName()).log(Level.SEVERE, null, ex);
-            return new User(uuid, System.currentTimeMillis(), 7, 7);
+            return new User(uuid, System.currentTimeMillis(),
+                    soulConfig.getStartSouls(),
+                    soulConfig.getSoulLimit());
         }
     }
 
@@ -80,10 +89,11 @@ public class UserDataSQLite implements UserData
         try
         {
             Statement stat = connection.createStatement();
-            stat.executeUpdate("INSERT OR REPLACE INTO Users(uuid, lastGive, souls) "
+            stat.executeUpdate("INSERT OR REPLACE INTO Users(uuid, lastGive, souls, soulsLimit) "
                     + "VALUES('" + user.getUuid() + "', '"
                     + user.getLastGive() + "', ' "
-                    + user.getSouls() + "');");
+                    + user.getSouls() + "', '"
+                    + user.getLimit() + "');");
 
         } catch (Exception ex)
         {
