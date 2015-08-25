@@ -32,9 +32,11 @@ public class SoulCounter extends BukkitRunnable
         while (i.hasNext())
         {
             User user = i.next();
-            if(user.giveSoul())
+            int souls = user.updateSouls(currentTime);
+
+            if (souls != 0)
             {
-                Bukkit.getPlayer(user.getUuid()).sendMessage(language.getMessage("receive.soul",user.getSouls()));
+                Bukkit.getPlayer(user.getUuid()).sendMessage(language.getMessage("receive.soul", souls, user.getSouls()));
             }
         }
     }

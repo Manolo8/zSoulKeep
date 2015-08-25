@@ -62,12 +62,13 @@ public class UserDataSQLite implements UserData
                 int souls = rs.getInt("souls");
                 int limit = rs.getInt("soulsLimit");
 
-                user = new User(uuid, lastGive, souls, limit);
+                user = new User(uuid, lastGive, souls, limit, soulConfig.getSoulDelay());
             } else
             {
                 user = new User(uuid, System.currentTimeMillis(),
                         soulConfig.getStartSouls(),
-                        soulConfig.getSoulLimit());
+                        soulConfig.getSoulLimit(),
+                        soulConfig.getSoulDelay());
             }
 
             return user;
@@ -77,7 +78,8 @@ public class UserDataSQLite implements UserData
             Logger.getLogger(UserDataSQLite.class.getName()).log(Level.SEVERE, null, ex);
             return new User(uuid, System.currentTimeMillis(),
                     soulConfig.getStartSouls(),
-                    soulConfig.getSoulLimit());
+                    soulConfig.getSoulLimit(),
+                    soulConfig.getSoulDelay());
         }
     }
 

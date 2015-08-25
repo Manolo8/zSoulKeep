@@ -1,5 +1,6 @@
 package br.com.tinycraft.zsoulkeep.user;
 
+import br.com.tinycraft.zsoulkeep.SoulConfig;
 import br.com.tinycraft.zsoulkeep.data.UserData;
 import br.com.tinycraft.zsoulkeep.exceptions.NoUserDataException;
 import java.util.ArrayList;
@@ -18,14 +19,16 @@ public class UserManager
 
     private final UserData userData;
     private List<User> users;
+    private SoulConfig soulConfig;
 
-    public UserManager(UserData userData)
+    public UserManager(UserData userData, SoulConfig soulConfig)
     {
         this.userData = userData;
+        this.soulConfig = soulConfig;
 
         users = new ArrayList();
-        
-        for(Player player : Bukkit.getServer().getOnlinePlayers())
+
+        for (Player player : Bukkit.getServer().getOnlinePlayers())
         {
             loadUser(player);
         }
@@ -64,7 +67,12 @@ public class UserManager
             user = userData.loadUser(player.getUniqueId());
         } catch (NoUserDataException e)
         {
-            user = new User(player.getUniqueId(), System.currentTimeMillis(), 5, 5);
+            e.printStackTrace();
+            user = new User(player.getUniqueId(),
+                    System.currentTimeMillis(),
+                    soulConfig.getStartSouls(),
+                    soulConfig.getSoulLimit(),
+                    soulConfig.getSoulDelay());
         }
         users.add(user);
         return user;
@@ -73,13 +81,13 @@ public class UserManager
     public void saveUser(Player player)
     {
         User user = getUser(player.getUniqueId(), true);
-        
+
         if (user != null)
         {
             saveUser(user);
         }
     }
-    
+
     public List<User> getUsers()
     {
         return this.users;

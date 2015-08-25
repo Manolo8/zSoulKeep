@@ -13,13 +13,15 @@ public class User
     private long lastGive;
     private int souls;
     private int limit;
+    private final long giveDelay;
 
-    public User(UUID uuid, long lastGive, int souls, int limit)
+    public User(UUID uuid, long lastGive, int souls, int limit, long giveDelay)
     {
         this.uuid = uuid;
         this.lastGive = lastGive;
         this.souls = souls;
         this.limit = limit;
+        this.giveDelay = giveDelay * 1000;
     }
 
     public UUID getUuid()
@@ -61,34 +63,38 @@ public class User
     {
         this.souls = souls;
     }
-    
+
     public void setLimit(int limit)
     {
         this.limit = limit;
     }
 
-    public boolean giveSoul()
+    public int updateSouls(long actualTime)
     {
-        if (souls >= limit)
-        {
-            return false;
-        } else
-        {
-            souls++;
-            return true;
-        }
+        long timeDef = actualTime - lastGive;
+
+        int soulsToGive = (int) (timeDef / giveDelay);
+
+        lastGive = lastGive + soulsToGive * giveDelay;
+
+        return giveSouls(soulsToGive);
     }
 
     public int giveSouls(int quantity)
     {
+        if (quantity < 1)
+        {
+            return 0;
+        }
+
         int oldQuantity = souls;
+
         souls += quantity;
 
         if (souls > limit)
         {
             souls = limit;
         }
-        
         return souls - oldQuantity;
     }
 }

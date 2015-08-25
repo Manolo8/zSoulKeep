@@ -27,13 +27,13 @@ public class zSoulKeep extends JavaPlugin
     {
         soulConfig = new SoulConfig(this);
         userData = new UserDataSQLite(this);
-        userManager = new UserManager(userData);
+        userManager = new UserManager(userData,soulConfig);
         language = new Language(this, soulConfig);
         commandManager = new CommandManager(userManager, language);
 
         getServer().getPluginManager().registerEvents(new PlayerListener(userManager, language, soulConfig), this);
         getServer().getScheduler().runTaskTimer(this,
-                new SoulCounter(userManager, language), 20 * 60 * soulConfig.getSoulDelay(), 20);
+                new SoulCounter(userManager, language), 100, 20);
 
         getCommand("souls").setExecutor(commandManager);
         getCommand("soulsadm").setExecutor(commandManager);

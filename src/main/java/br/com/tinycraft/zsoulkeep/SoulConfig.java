@@ -19,7 +19,7 @@ public final class SoulConfig
     private final int soulLimit;
     private final boolean giveOffline;
 
-    private final double _VERSION = 1.0;
+    private final double _VERSION = 1.1;
 
     public FileConfiguration getConfig()
     {
@@ -42,7 +42,7 @@ public final class SoulConfig
 
         this.language = config.getString("Config.LANGUAGE", "pt_BR");
         this.soulLimit = config.getInt("Config.SOUL_LIMIT", 5);
-        this.soulDelay = config.getInt("Config.SOUL_LIMIT", 120);
+        this.soulDelay = config.getInt("Config.SOUL_TIME_DELAY", 120);
         this.startSouls = config.getInt("Config.START_SOULS", 5);
         this.giveOffline = config.getBoolean("Config.GIVE_OFFLINE", true);
     }

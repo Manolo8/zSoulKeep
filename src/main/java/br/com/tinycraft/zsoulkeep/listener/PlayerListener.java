@@ -24,45 +24,37 @@ import org.bukkit.inventory.ItemStack;
  */
 public class PlayerListener implements Listener
 {
-
+    
     private final UserManager userManager;
     private final Language language;
     private final boolean keepXP;
     private final boolean keepInventory;
-    private final int soulGiveDelay;
     private final boolean giveOffLine;
     private final HashMap<Player, List<ItemStack[]>> playersItems;
-
+    
     public PlayerListener(UserManager userManager, Language language, SoulConfig soulConfig)
     {
         this.userManager = userManager;
         this.language = language;
         this.keepInventory = true;
         this.keepXP = true;
-        this.soulGiveDelay = 1000 * 60 * soulConfig.getSoulDelay();
         this.giveOffLine = soulConfig.isGiveOffline();
         playersItems = new HashMap();
     }
-
+    
     @EventHandler
     public void onPlayerJoinEvent(PlayerJoinEvent e)
     {
         User user = userManager.loadUser(e.getPlayer());
-        int souls = 0;
         int givedSouls = 0;
         if (giveOffLine)
         {
-            long currentTime = System.currentTimeMillis();
-            long lastTime = user.getLastGive();
-            long tempResult = currentTime - lastTime;
-            while (tempResult >= soulGiveDelay)
-            {
-                tempResult -= soulGiveDelay;
-                souls++;
-            }
-            givedSouls = user.giveSouls(souls);
+            givedSouls = user.updateSouls(System.currentTimeMillis());
+        } else
+        {
+            user.setLastGive(System.currentTimeMillis());
         }
-
+        
         if (givedSouls == 0)
         {
             e.getPlayer().sendMessage(language.getMessage("login.soul.amount", user.getSouls()));
@@ -71,13 +63,13 @@ public class PlayerListener implements Listener
             e.getPlayer().sendMessage(language.getMessage("login.soul.receive", givedSouls, user.getSouls()));
         }
     }
-
+    
     @EventHandler
     public void onPlayerQuitEvent(PlayerQuitEvent e)
     {
         userManager.saveUser(e.getPlayer());
     }
-
+    
     @EventHandler
     public void onPlayerKickEvent(PlayerKickEvent e)
     {
@@ -85,19 +77,19 @@ public class PlayerListener implements Listener
         {
             return;
         }
-
+        
         userManager.saveUser(e.getPlayer());
     }
-
+    
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerRespawnEvent(PlayerRespawnEvent e)
     {
         if (this.playersItems.containsKey(e.getPlayer()))
         {
             Player player = e.getPlayer();
-
+            
             int row = 0;
-
+            
             for (ItemStack[] items : playersItems.get(e.getPlayer()))
             {
                 if (row == 0)
@@ -110,10 +102,10 @@ public class PlayerListener implements Listener
                 row++;
             }
         }
-
+        
         this.playersItems.remove(e.getPlayer());
     }
-
+    
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerDeathEvent(PlayerDeathEvent e)
     {
@@ -124,11 +116,11 @@ public class PlayerListener implements Listener
             player.sendMessage(language.getMessage("death.no.soul"));
             return;
         }
-
+        
         boolean inventory = player.hasPermission("zsoulkeep.keep.inventory");
         boolean exp = player.hasPermission("zsoulkeep.keep.exp");
         int almas = user.getSouls();
-
+        
         if (almas == 0)
         {
             player.sendMessage(language.getMessage("death.last.soul"));
@@ -136,18 +128,18 @@ public class PlayerListener implements Listener
         {
             player.sendMessage(language.getMessage("death.moreone.soul", almas));
         }
-
+        
         if (keepInventory && inventory)
         {
             List<ItemStack[]> items = new ArrayList();
             items.add(e.getEntity().getInventory().getArmorContents());
             items.add(e.getEntity().getInventory().getContents());
-
+            
             this.playersItems.put(player, items);
-
+            
             e.getDrops().clear();
         }
-
+        
         if (keepXP && exp)
         {
             e.setKeepLevel(true);
